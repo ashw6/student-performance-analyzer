@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPortal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh}
+.app{min-height:100vh;background:#0f1117}
+.page{display:none}.page.active{display:block}
+input,select{width:100%;padding:10px 14px;background:#1e2330;border:0.5px solid #2d3548;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:#6c63ff}
+input::placeholder{color:#4a5568}
+.btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:500;font-family:inherit;transition:all 0.2s}
+.btn-primary{background:#6c63ff;color:#fff}
+.btn-primary:hover{background:#5a52e0}
+.btn-secondary{background:#1e2330;color:#a0aec0;border:0.5px solid #2d3548}
+.btn-secondary:hover{background:#252d3d}
+.btn-danger{background:#c53030;color:#fff}
+.btn-danger:hover{background:#9b2c2c}
+.btn-success{background:#276749;color:#fff}
+.btn-success:hover{background:#1f5138}
+.btn-sm{padding:6px 14px;font-size:12px}
+.card{background:#1a1f2e;border:0.5px solid #2d3548;border-radius:12px;padding:20px}
+.metric-card{background:#1a1f2e;border:0.5px solid #2d3548;border-radius:10px;padding:16px}
+.metric-val{font-size:26px;font-weight:500;margin-top:4px}
+.metric-lbl{font-size:12px;color:#718096}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.nav-bar{display:flex;gap:8px;padding:16px 24px;background:rgba(19,23,32,0.8);border-bottom:0.5px solid #2d3548;flex-wrap:wrap}
+.nav-btn{padding:8px 16px;border-radius:8px;border:0.5px solid #2d3548;background:transparent;color:#a0aec0;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.2s}
+.nav-btn:hover{background:#1e2330;color:#e2e8f0}
+.nav-btn.active{background:#6c63ff;color:#fff;border-color:#6c63ff}
+.section{display:none;padding:24px}.section.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.header-bar{padding:16px 24px;background:rgba(19,23,32,0.8);border-bottom:0.5px solid #2d3548;display:flex;align-items:center;justify-content:space-between}
+.header-name{font-size:18px;font-weight:500}
+.header-role{font-size:12px;color:#718096}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:#718096;font-weight:500;border-bottom:0.5px solid #2d3548}
+td{padding:10px 12px;border-bottom:0.5px solid #1a2030}
+tr:hover td{background:#1e2535}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:#718096;margin-bottom:6px;display:block}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.alert-error{background:#2d1a1a;border:0.5px solid #c53030;color:#fc8181}
+.alert-success{background:#1a2d1f;border:0.5px solid #276749;color:#68d391}
+.bar-wrap{background:#1e2535;border-radius:4px;height:8px;overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin:2px}
+.suggestion-card{border-radius:10px;padding:14px;margin-bottom:10px}
+.weak{background:#2d1515;border:0.5px solid #7b3333}
+.strong{background:#152d1f;border:0.5px solid #2d7b4f}
+@media(max-width:600px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- AUTH PAGE -->
+<div class="page active" id="page-auth">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+<div style="width:100%;max-width:380px">
+<div style="text-align:center;margin-bottom:32px">
+<div style="width:48px;height:48px;background:#6c63ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px">🎓</div>
+<h1 style="font-size:22px;font-weight:500;color:#e2e8f0">EduPortal</h1>
+<p style="font-size:13px;color:#718096;margin-top:4px">Academic management system</p>
+</div>
+<div style="display:flex;gap:8px;margin-bottom:24px">
+<button class="btn btn-primary" style="flex:1" onclick="showAuth('login')">Login</button>
+<button class="btn btn-secondary" style="flex:1" onclick="showAuth('register')">Register</button>
+</div>
+<div id="auth-login" class="card">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Sign in</p>
+<div id="login-alert"></div>
+<div class="form-group"><label class="form-label">Username</label><input id="li-user" placeholder="Enter username"></div>
+<div class="form-group"><label class="form-label">Password</label><input id="li-pass" type="password" placeholder="Enter password"></div>
+<div class="form-group"><label class="form-label">Role</label>
+<select id="li-role"><option value="student">Student</option><option value="lecturer">Lecturer</option></select></div>
+<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doLogin()">Login</button>
+</div>
+<div id="auth-register" class="card" style="display:none">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Create account</p>
+<div id="reg-alert"></div>
+<div class="form-group"><label class="form-label">Full Name</label><input id="reg-name" placeholder="Your full name"></div>
+<div class="form-group"><label class="form-label">Username</label><input id="reg-user" placeholder="Choose a username"></div>
+<div class="form-group"><label class="form-label">Password</label><input id="reg-pass" type="password" placeholder="Choose a password"></div>
+<div class="form-group"><label class="form-label">Role</label>
+<select id="reg-role"><option value="student">Student</option><option value="lecturer">Lecturer</option></select></div>
+<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doRegister()">Register</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- STUDENT PAGE -->
+<div class="page" id="page-student">
+<div class="header-bar">
+<div><div class="header-name" id="s-name">Student</div><div class="header-role">Student Portal</div></div>
+<div style="display:flex;align-items:center;gap:12px">
+<span style="font-size:12px;color:#718096">EduPortal</span>
+<button class="btn btn-sm btn-secondary" onclick="logout()">Logout</button>
+</div>
+</div>
+<div class="nav-bar">
+<button class="nav-btn active" onclick="sNav('dashboard',this)">Dashboard</button>
+<button class="nav-btn" onclick="sNav('subjects',this)">Subjects</button>
+<button class="nav-btn" onclick="sNav('leaderboard',this)">Leaderboard</button>
+</div>
+<div id="s-section-dashboard" class="section active">
+<div id="s-metrics-grid" class="grid4" style="margin-bottom:20px"></div>
+<div class="grid2">
+<div class="card"><p style="font-size:13px;font-weight:500;margin-bottom:14px;color:#a0aec0">Attendance per subject</p><div id="s-att-chart"></div></div>
+<div class="card"><p style="font-size:13px;font-weight:500;margin-bottom:14px;color:#a0aec0">Marks per subject</p><div id="s-marks-chart"></div></div>
+</div>
+<div style="margin-top:16px" id="s-suggestions"></div>
+</div>
+<div id="s-section-subjects" class="section">
+<div class="card"><p style="font-size:15px;font-weight:500;margin-bottom:16px">Your subjects</p><div id="s-subjects-table"></div></div>
+</div>
+<div id="s-section-leaderboard" class="section">
+<div id="s-leaderboard-content"></div>
+</div>
+</div>
+
+<!-- LECTURER PAGE -->
+<div class="page" id="page-lecturer">
+<div class="header-bar">
+<div><div class="header-name" id="l-name">Lecturer</div><div class="header-role">Lecturer Portal</div></div>
+<button class="btn btn-sm btn-secondary" onclick="logout()">Logout</button>
+</div>
+<div class="nav-bar">
+<button class="nav-btn active" onclick="lNav('dashboard',this)">Dashboard</button>
+<button class="nav-btn" onclick="lNav('subjects',this)">Subjects</button>
+<button class="nav-btn" onclick="lNav('add-student',this)">Add Student</button>
+<button class="nav-btn" onclick="lNav('edit-student',this)">Edit Student</button>
+<button class="nav-btn" onclick="lNav('delete-student',this)">Delete Student</button>
+</div>
+<div id="l-section-dashboard" class="section active">
+<div id="l-metrics-grid" class="grid3" style="margin-bottom:20px"></div>
+<div class="card"><p style="font-size:13px;font-weight:500;margin-bottom:14px;color:#a0aec0">Class performance overview</p><div id="l-perf-chart"></div></div>
+</div>
+<div id="l-section-subjects" class="section">
+<div class="card" style="margin-bottom:16px">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Add new subject</p>
+<div id="add-subj-alert"></div>
+<div style="display:flex;gap:10px">
+<input id="new-subj-name" placeholder="Subject name" style="flex:1">
+<button class="btn btn-primary" onclick="addSubject()">Add subject</button>
+</div>
+</div>
+<div class="card"><p style="font-size:15px;font-weight:500;margin-bottom:16px">My subjects</p><div id="l-subjects-table"></div></div>
+<div class="card" style="margin-top:16px;display:none" id="manage-marks-card">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Manage marks & attendance — <span id="editing-subj" style="color:#6c63ff"></span></p>
+<div id="manage-marks-body"></div>
+</div>
+</div>
+<div id="l-section-add-student" class="section">
+<div class="card" style="max-width:480px">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Add student to subject</p>
+<div id="add-stu-alert"></div>
+<div class="form-group"><label class="form-label">Student username</label><input id="as-user" placeholder="Student's registered username"></div>
+<div class="form-group"><label class="form-label">Subject</label><select id="as-subj"></select></div>
+<button class="btn btn-success" onclick="addStudentToSubject()">Add student</button>
+</div>
+</div>
+<div id="l-section-edit-student" class="section">
+<div class="card">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Edit student marks & attendance</p>
+<div id="edit-stu-alert"></div>
+<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+<select id="es-subj" style="flex:1;min-width:140px" onchange="loadEditStudents()"><option value="">Select subject</option></select>
+<select id="es-stu" style="flex:1;min-width:140px" onchange="loadEditForm()"><option value="">Select student</option></select>
+</div>
+<div id="edit-form" style="display:none">
+<div class="grid2" style="gap:10px;margin-bottom:12px">
+<div class="form-group"><label class="form-label">Marks (0–100)</label><input id="ef-marks" type="number" min="0" max="100"></div>
+<div class="form-group"><label class="form-label">Attendance (%)</label><input id="ef-att" type="number" min="0" max="100"></div>
+</div>
+<button class="btn btn-primary" onclick="saveEdit()">Save changes</button>
+</div>
+</div>
+</div>
+<div id="l-section-delete-student" class="section">
+<div class="card">
+<p style="font-size:15px;font-weight:500;margin-bottom:16px">Remove student from subject</p>
+<div id="del-stu-alert"></div>
+<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+<select id="ds-subj" style="flex:1;min-width:140px" onchange="loadDelStudents()"><option value="">Select subject</option></select>
+<select id="ds-stu" style="flex:1;min-width:140px"><option value="">Select student</option></select>
+</div>
+<button class="btn btn-danger" onclick="deleteStudent()">Remove student</button>
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+// ── localStorage persistence helpers ──────────────────────────────────────────
+function loadDB() {
+  return {
+    students:  JSON.parse(localStorage.getItem('edu_students')  || '{}'),
+    lecturers: JSON.parse(localStorage.getItem('edu_lecturers') || '{}'),
+    subjects:  JSON.parse(localStorage.getItem('edu_subjects')  || '[]'),
+  };
+}
+function saveDB() {
+  localStorage.setItem('edu_students',  JSON.stringify(db.students));
+  localStorage.setItem('edu_lecturers', JSON.stringify(db.lecturers));
+  localStorage.setItem('edu_subjects',  JSON.stringify(db.subjects));
+}
+
+let db = loadDB();
+let currentUser = null, currentRole = null;
+
+const colors = ['#6c63ff','#48bb78','#f6ad55','#63b3ed','#fc8181','#4fd1c5','#b794f4','#f687b3'];
+const grades  = v => v>=90?'A+':v>=80?'A':v>=70?'B':v>=60?'C':v>=50?'D':'F';
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+function showAuth(tab) {
+  document.getElementById('auth-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab==='register' ? 'block' : 'none';
+}
+function alert_(id, msg, type) {
+  document.getElementById(id).innerHTML = msg ? `<div class="alert alert-${type}">${msg}</div>` : '';
+}
+function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const user = document.getElementById('reg-user').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const role = document.getElementById('reg-role').value;
+  if (!name||!user||!pass) { alert_('reg-alert','Please fill all fields.','error'); return; }
+  if (db.students[user]||db.lecturers[user]) { alert_('reg-alert','Username already taken.','error'); return; }
+  if (role==='student') db.students[user]  = {name, pass, username: user};
+  else                  db.lecturers[user] = {name, pass, username: user};
+  saveDB();
+  alert_('reg-alert','Account created! You can now login.','success');
+  ['reg-name','reg-user','reg-pass'].forEach(id => document.getElementById(id).value = '');
+}
+function doLogin() {
+  const user  = document.getElementById('li-user').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  const role  = document.getElementById('li-role').value;
+  const store = role==='student' ? db.students : db.lecturers;
+  if (!store[user] || store[user].pass !== pass) { alert_('login-alert','Invalid username or password.','error'); return; }
+  currentUser = store[user]; currentRole = role;
+  showPage(role==='student' ? 'page-student' : 'page-lecturer');
+  role==='student' ? renderStudent() : renderLecturer();
+}
+function logout() { currentUser = null; currentRole = null; showPage('page-auth'); }
+function showPage(id) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+// ── Nav ───────────────────────────────────────────────────────────────────────
+function sNav(sec, btn) {
+  document.querySelectorAll('#page-student .nav-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('#page-student .section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-section-'+sec).classList.add('active');
+  if (sec==='leaderboard') renderLeaderboard();
+  if (sec==='dashboard')   { renderSMetrics(); renderSCharts(); renderSSuggestions(); }
+}
+function lNav(sec, btn) {
+  document.querySelectorAll('#page-lecturer .nav-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('#page-lecturer .section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('l-section-'+sec).classList.add('active');
+  if (sec==='subjects')      { renderLSubjects(); document.getElementById('manage-marks-card').style.display='none'; }
+  if (sec==='add-student')   { populateSubjSelect('as-subj'); }
+  if (sec==='edit-student')  { populateSubjSelect('es-subj'); document.getElementById('edit-form').style.display='none'; }
+  if (sec==='delete-student'){ populateSubjSelect('ds-subj'); }
+  if (sec==='dashboard')     { renderLDashboard(); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function mySubjects()        { return db.subjects.filter(s=>s.lecturer===currentUser.username); }
+function mySubjectsAsStudent(){ return db.subjects.filter(s=>s.enrollments && s.enrollments[currentUser.username]); }
+function bar(val, max, color){ return `<div class="bar-wrap"><div class="bar-fill" style="width:${Math.min(100,Math.round(val/max*100))}%;background:${color}"></div></div>`; }
+
+// ── Student render ────────────────────────────────────────────────────────────
+function renderStudent() {
+  document.getElementById('s-name').textContent = currentUser.name;
+  renderSMetrics(); renderSCharts(); renderSSuggestions(); renderSSubjectsTable();
+}
+function renderSMetrics() {
+  const subs = mySubjectsAsStudent();
+  let totalMarks=0, totalAtt=0, n=0;
+  subs.forEach(s=>{ const e=s.enrollments[currentUser.username]; totalMarks+=e.marks||0; totalAtt+=e.attendance||0; n++; });
+  const avgM=n?Math.round(totalMarks/n):0, avgA=n?Math.round(totalAtt/n):0;
+  document.getElementById('s-metrics-grid').innerHTML=`
+    <div class="metric-card"><div class="metric-lbl">Courses enrolled</div><div class="metric-val" style="color:#6c63ff">${subs.length}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Overall attendance</div><div class="metric-val" style="color:#48bb78">${avgA}%</div></div>
+    <div class="metric-card"><div class="metric-lbl">Avg marks</div><div class="metric-val" style="color:#f6ad55">${avgM}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Overall grade</div><div class="metric-val" style="color:#63b3ed">${grades(avgM)}</div></div>`;
+}
+function renderSCharts() {
+  const subs = mySubjectsAsStudent(); let att='', marks='';
+  subs.forEach((s,i)=>{ const e=s.enrollments[currentUser.username]; const c=colors[i%colors.length];
+    att   += `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${s.name}</span><span style="color:${c}">${e.attendance||0}%</span></div>${bar(e.attendance||0,100,c)}</div>`;
+    marks += `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${s.name}</span><span style="color:${c}">${e.marks||0}</span></div>${bar(e.marks||0,100,c)}</div>`;
+  });
+  document.getElementById('s-att-chart').innerHTML   = att   || '<p style="font-size:13px;color:#718096">No subjects yet.</p>';
+  document.getElementById('s-marks-chart').innerHTML = marks || '<p style="font-size:13px;color:#718096">No subjects yet.</p>';
+}
+function renderSSuggestions() {
+  const subs = mySubjectsAsStudent(); if (!subs.length) { document.getElementById('s-suggestions').innerHTML=''; return; }
+  const weak   = subs.filter(s=>(s.enrollments[currentUser.username].marks||0)<60);
+  const strong = subs.filter(s=>(s.enrollments[currentUser.username].marks||0)>=80);
+  let html = '<div class="grid2">';
+  if (weak.length)   html += `<div class="suggestion-card weak"><p style="font-size:12px;color:#fc8181;font-weight:500;margin-bottom:8px">Needs improvement</p>${weak.map(s=>`<div class="tag" style="background:#4a1a12;color:#fc8181">${s.name}</div>`).join('')}<p style="font-size:11px;color:#718096;margin-top:8px">Focus more time on these subjects.</p></div>`;
+  if (strong.length) html += `<div class="suggestion-card strong"><p style="font-size:12px;color:#68d391;font-weight:500;margin-bottom:8px">Excelling in</p>${strong.map(s=>`<div class="tag" style="background:#153d2a;color:#68d391">${s.name}</div>`).join('')}<p style="font-size:11px;color:#718096;margin-top:8px">Keep it up — you're doing great!</p></div>`;
+  document.getElementById('s-suggestions').innerHTML = html + '</div>';
+}
+function renderSSubjectsTable() {
+  const subs = mySubjectsAsStudent();
+  if (!subs.length) { document.getElementById('s-subjects-table').innerHTML='<p style="font-size:13px;color:#718096">Not enrolled in any subjects yet.</p>'; return; }
+  const rows = subs.map((s,i)=>{ const e=s.enrollments[currentUser.username]; const c=colors[i%colors.length];
+    return `<tr><td><span class="badge" style="background:${c}22;color:${c}">${s.name}</span></td><td>${s.lecturer}</td><td>${e.marks??'—'}</td><td>${e.attendance??'—'}%</td><td>${grades(e.marks||0)}</td></tr>`;
+  }).join('');
+  document.getElementById('s-subjects-table').innerHTML=`<table><tr><th>Subject</th><th>Lecturer</th><th>Marks</th><th>Attendance</th><th>Grade</th></tr>${rows}</table>`;
+}
+function renderLeaderboard() {
+  const subs = mySubjectsAsStudent(); let html = '';
+  subs.forEach((s,si)=>{
+    const enr = Object.entries(s.enrollments||{}).sort((a,b)=>(b[1].marks||0)-(a[1].marks||0)).slice(0,5);
+    if (!enr.length) return;
+    html += `<div class="card" style="margin-bottom:16px"><p style="font-size:14px;font-weight:500;margin-bottom:14px"><span class="badge" style="background:${colors[si%colors.length]}22;color:${colors[si%colors.length]}">${s.name}</span></p><table><tr><th>Rank</th><th>Student</th><th>Marks</th><th>Grade</th></tr>`;
+    enr.forEach(([uname,data],i)=>{ const rank=['🥇','🥈','🥉'][i]||`#${i+1}`; const stuName=db.students[uname]?.name||uname;
+      html+=`<tr><td>${rank}</td><td>${stuName}</td><td>${data.marks||0}</td><td>${grades(data.marks||0)}</td></tr>`; });
+    html += '</table></div>';
+  });
+  document.getElementById('s-leaderboard-content').innerHTML = html || '<p style="font-size:13px;color:#718096">Enroll in subjects to see leaderboard.</p>';
+}
+
+// ── Lecturer render ───────────────────────────────────────────────────────────
+function renderLecturer() { document.getElementById('l-name').textContent=currentUser.name; renderLDashboard(); renderLSubjects(); }
+function renderLDashboard() {
+  const subs = mySubjects(); let totalStudents=0;
+  subs.forEach(s=>{ totalStudents+=Object.keys(s.enrollments||{}).length; });
+  document.getElementById('l-metrics-grid').innerHTML=`
+    <div class="metric-card"><div class="metric-lbl">Subjects taught</div><div class="metric-val" style="color:#6c63ff">${subs.length}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Total students</div><div class="metric-val" style="color:#48bb78">${totalStudents}</div></div>
+    <div class="metric-card"><div class="metric-lbl">Active enrollments</div><div class="metric-val" style="color:#f6ad55">${totalStudents}</div></div>`;
+  let perf='';
+  subs.forEach((s,i)=>{ const enr=Object.values(s.enrollments||{}); const avg=enr.length?Math.round(enr.reduce((a,b)=>a+(b.marks||0),0)/enr.length):0; const c=colors[i%colors.length];
+    perf+=`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${s.name} <span style="color:#718096">(${enr.length} students)</span></span><span style="color:${c}">avg ${avg}</span></div>${bar(avg,100,c)}</div>`;
+  });
+  document.getElementById('l-perf-chart').innerHTML = perf || '<p style="font-size:13px;color:#718096">No subjects yet. Add subjects to see performance.</p>';
+}
+function renderLSubjects() {
+  const subs = mySubjects();
+  if (!subs.length) { document.getElementById('l-subjects-table').innerHTML='<p style="font-size:13px;color:#718096">No subjects added yet.</p>'; return; }
+  const rows = subs.map((s,i)=>{ const cnt=Object.keys(s.enrollments||{}).length; const c=colors[i%colors.length]; const idx=db.subjects.indexOf(s);
+    return `<tr><td><span class="badge" style="background:${c}22;color:${c}">${s.name}</span></td><td>${cnt} student${cnt!==1?'s':''}</td><td><button class="btn btn-sm btn-secondary" onclick="openManageMarks(${idx})">Manage marks</button></td></tr>`;
+  }).join('');
+  document.getElementById('l-subjects-table').innerHTML=`<table><tr><th>Subject</th><th>Students</th><th>Actions</th></tr>${rows}</table>`;
+}
+function openManageMarks(idx) {
+  const s = db.subjects[idx];
+  document.getElementById('editing-subj').textContent = s.name;
+  document.getElementById('manage-marks-card').style.display = 'block';
+  const enr = Object.entries(s.enrollments||{});
+  if (!enr.length) { document.getElementById('manage-marks-body').innerHTML='<p style="font-size:13px;color:#718096">No students enrolled in this subject.</p>'; return; }
+  const rows = enr.map(([uname,data])=>{ const stuName=db.students[uname]?.name||uname;
+    return `<tr><td>${stuName} <span style="font-size:11px;color:#718096">(${uname})</span></td>
+      <td><input type="number" min="0" max="100" value="${data.marks??''}" id="mm-marks-${uname}" style="width:70px;padding:6px 8px"></td>
+      <td><input type="number" min="0" max="100" value="${data.attendance??''}" id="mm-att-${uname}" style="width:70px;padding:6px 8px"></td>
+      <td><button class="btn btn-sm btn-primary" onclick="saveMarks(${idx},'${uname}')">Save</button></td></tr>`;
+  }).join('');
+  document.getElementById('manage-marks-body').innerHTML=`<table><tr><th>Student</th><th>Marks</th><th>Attendance (%)</th><th></th></tr>${rows}</table>`;
+}
+function saveMarks(idx, uname) {
+  db.subjects[idx].enrollments[uname] = {
+    marks:      parseInt(document.getElementById('mm-marks-'+uname).value)||0,
+    attendance: parseInt(document.getElementById('mm-att-'+uname).value)||0
+  };
+  saveDB();
+}
+function addSubject() {
+  const name = document.getElementById('new-subj-name').value.trim();
+  if (!name) { alert_('add-subj-alert','Enter a subject name.','error'); return; }
+  if (db.subjects.find(s=>s.name===name&&s.lecturer===currentUser.username)) { alert_('add-subj-alert','Subject already exists.','error'); return; }
+  db.subjects.push({name, lecturer:currentUser.username, enrollments:{}});
+  saveDB();
+  document.getElementById('new-subj-name').value='';
+  alert_('add-subj-alert','Subject added!','success');
+  renderLSubjects(); renderLDashboard();
+}
+function populateSubjSelect(id) {
+  const sel=document.getElementById(id); const cur=sel.value; const subs=mySubjects();
+  sel.innerHTML='<option value="">Select subject</option>'+subs.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+  if (cur) sel.value=cur;
+}
+function addStudentToSubject() {
+  const uname    = document.getElementById('as-user').value.trim();
+  const subjName = document.getElementById('as-subj').value;
+  if (!uname||!subjName) { alert_('add-stu-alert','Fill all fields.','error'); return; }
+  if (!db.students[uname]) { alert_('add-stu-alert','Student username not found. They must register first.','error'); return; }
+  const subj = db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username);
+  if (!subj) { alert_('add-stu-alert','Subject not found.','error'); return; }
+  if (subj.enrollments[uname]) { alert_('add-stu-alert','Student already enrolled.','error'); return; }
+  subj.enrollments[uname] = {marks:0, attendance:0};
+  saveDB();
+  alert_('add-stu-alert',`${db.students[uname].name} added to ${subjName}!`,'success');
+  document.getElementById('as-user').value='';
+  renderLDashboard();
+}
+function loadEditStudents() {
+  const subjName=document.getElementById('es-subj').value; const sel=document.getElementById('es-stu');
+  sel.innerHTML='<option value="">Select student</option>'; if (!subjName) return;
+  const subj=db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username); if (!subj) return;
+  Object.keys(subj.enrollments).forEach(u=>{ sel.innerHTML+=`<option value="${u}">${db.students[u]?.name||u}</option>`; });
+  document.getElementById('edit-form').style.display='none';
+}
+function loadEditForm() {
+  const subjName=document.getElementById('es-subj').value; const uname=document.getElementById('es-stu').value;
+  if (!subjName||!uname) { document.getElementById('edit-form').style.display='none'; return; }
+  const subj=db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username);
+  if (!subj||!subj.enrollments[uname]) { document.getElementById('edit-form').style.display='none'; return; }
+  const e=subj.enrollments[uname];
+  document.getElementById('ef-marks').value=e.marks||0;
+  document.getElementById('ef-att').value=e.attendance||0;
+  document.getElementById('edit-form').style.display='block';
+}
+function saveEdit() {
+  const subjName=document.getElementById('es-subj').value; const uname=document.getElementById('es-stu').value;
+  const subj=db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username); if (!subj) return;
+  subj.enrollments[uname]={marks:parseInt(document.getElementById('ef-marks').value)||0, attendance:parseInt(document.getElementById('ef-att').value)||0};
+  saveDB();
+  alert_('edit-stu-alert','Changes saved!','success');
+}
+function loadDelStudents() {
+  const subjName=document.getElementById('ds-subj').value; const sel=document.getElementById('ds-stu');
+  sel.innerHTML='<option value="">Select student</option>'; if (!subjName) return;
+  const subj=db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username); if (!subj) return;
+  Object.keys(subj.enrollments).forEach(u=>{ sel.innerHTML+=`<option value="${u}">${db.students[u]?.name||u}</option>`; });
+}
+function deleteStudent() {
+  const subjName=document.getElementById('ds-subj').value; const uname=document.getElementById('ds-stu').value;
+  if (!subjName||!uname) { alert_('del-stu-alert','Select a subject and student.','error'); return; }
+  const subj=db.subjects.find(s=>s.name===subjName&&s.lecturer===currentUser.username);
+  if (!subj) { alert_('del-stu-alert','Subject not found.','error'); return; }
+  delete subj.enrollments[uname];
+  saveDB();
+  alert_('del-stu-alert','Student removed.','success');
+  loadDelStudents(); renderLDashboard();
+}
+</script>
+</body>
+</html>
